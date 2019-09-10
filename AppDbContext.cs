@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace linaplastimportusers {
+namespace sklabelimportusers {
     public class AppDbContext : DbContext {
         private static readonly string SqlConnectionString =
             $"Server={Program._databaseIpAddress},{Program._databasePort};Database={Program._databaseName};User Id={Program._databaseUsername};Password={Program._databasePassword}";

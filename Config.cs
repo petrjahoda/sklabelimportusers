@@ -1,4 +1,4 @@
-﻿namespace linaplastimportusers {
+﻿namespace sklabelimportusers {
     public class Config {
         public string DatabaseType { get; set; }
         public string DatabaseIpAddress { get; set; }
@@ -43,16 +43,16 @@
             SmtpUsername = "support@zapsi.eu";
             SmtpPassword = "support01..";
             ImportDatabaseType = "sqlserver";
-            ImportDatabaseIpAddress = "sql17.linaplast.local\\sqlheo";
-            ImportDatabaseName = "Helios002";
+            ImportDatabaseIpAddress = "10.3.1.3";
+            ImportDatabaseName = "K2_SKLABEL";
             ImportDatabasePort = "1433";
             ImportDatabaseUsername = "zapsi";
-            ImportDatabasePassword = "Zapsi";
-            ImportDatabaseTable = "hvw_Zamestnanci";
-            ImportDatabaseUserIdColumn = "Cislo";
-            ImportDatabaseUserFirstNameColumn = "Prijmeni";
-            ImportDatabaseUserSurnameColumn = "Jmeno";
-            ImportDatabaseUserRfidColumn = "_EVOLoginZam";
+            ImportDatabasePassword = "DSgEEmPNxCwgTJjsd2uR";
+            ImportDatabaseTable = "Fask_logins";
+            ImportDatabaseUserIdColumn = "ID";
+            ImportDatabaseUserFirstNameColumn = "firstname";
+            ImportDatabaseUserSurnameColumn = "surname";
+            ImportDatabaseUserRfidColumn = "barcode";
             ImportDatabaseUserTypeColumn = "";
             ImportDatabaseUserEmailColumn = "";
             ImportDatabaseUserPhoneColumn = "";
