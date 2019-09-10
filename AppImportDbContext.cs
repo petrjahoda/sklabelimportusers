@@ -38,52 +38,29 @@ namespace sklabelimportusers {
         }
 
 
-
         private static void MapNecessaryColumns(ModelBuilder builder) {
-            builder.Entity<UserImport>()
+            builder.Entity<Fask_logins>()
                 .ToTable(Program._importDatabaseTable);
-            builder.Entity<UserImport>()
-                .Property(user => user.OID)
+            builder.Entity<Fask_logins>()
+                .Property(user => user.ID)
                 .HasColumnName(Program._importDatabaseUserIdColumn);
-            builder.Entity<UserImport>()
-                .Property(user => user.FirstName)
+            builder.Entity<Fask_logins>()
+                .Property(user => user.firstname)
                 .HasColumnName(Program._importDatabaseUserFirstNameColumn);
-            builder.Entity<UserImport>()
-                .Property(user => user.Name)
+            builder.Entity<Fask_logins>()
+                .Property(user => user.surname)
                 .HasColumnName(Program._importDatabaseUserSurnameColumn);
-            builder.Entity<UserImport>()
-                .Property(user => user.Rfid)
+            builder.Entity<Fask_logins>()
+                .Property(user => user.rfid)
                 .HasColumnName(Program._importDatabaseUserRfidColumn);
+            builder.Entity<Fask_logins>()
+                .Property(user => user.psswd)
+                .HasColumnName(Program._importDatabaseUserPinColumn);
+            builder.Entity<Fask_logins>()
+                .Property(user => user.barcode)
+                .HasColumnName(Program._importDatabaseUserBarcodeColumn);
         }
-        
-        //        private static void MapOptionalColumns(ModelBuilder builder) {
-//            if (Program._importDatabaseUserTypeColumn.Length > 0) {
-//                builder.Entity<User>()
-//                    .Property(user => user.Type)
-//                    .HasColumnName(Program._importDatabaseUserTypeColumn);
-//            } else {
-//                builder.Entity<User>()
-//                    .Ignore(user => user.Type);
-//            }
-//            if (Program._importDatabaseUserEmailColumn.Length > 0) {
-//                builder.Entity<User>()
-//                    .Property(user => user.Email)
-//                    .HasColumnName(Program._importDatabaseUserEmailColumn);
-//            } else {
-//                builder.Entity<User>()
-//                    .Ignore(user => user.Email);
-//            }
-//            if (Program._importDatabaseUserPhoneColumn.Length > 0) {
-//                builder.Entity<User>()
-//                    .Property(user => user.Phone)
-//                    .HasColumnName(Program._importDatabaseUserPhoneColumn);
-//            } else {
-//                builder.Entity<User>()
-//                    .Ignore(user => user.Phone);
-//            }
-//        }
 
-
-        public DbSet<UserImport> UserImport { get; set; }
+        public DbSet<Fask_logins> UserImport { get; set; }
     }
 }

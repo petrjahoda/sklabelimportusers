@@ -46,6 +46,8 @@ namespace sklabelimportusers {
         public static string _importDatabaseUserFirstNameColumn;
         public static string _importDatabaseUserSurnameColumn;
         public static string _importDatabaseUserRfidColumn;
+        public static string _importDatabaseUserBarcodeColumn;
+        public static string _importDatabaseUserPinColumn;
         public static string _importDatabaseTable;
         private static bool _importDatabaseIsAvailable;
         private static bool _systemIsActivated;
@@ -81,7 +83,7 @@ namespace sklabelimportusers {
             if (_databaseIsAvailable && _importDatabaseIsAvailable && !_processIsRunning) {
                 _processIsRunning = true;
                 LogInfo("[ MAIN ] --INF-- Import started", logger);
-                var usersToImport = new List<UserImport>();
+                var usersToImport = new List<Fask_logins>();
                 usersToImport = DownloadUserFromImportDatabase(logger, usersToImport);
                 if (usersToImport.Count > 0) {
                     using (var databaseContext = new AppDbContext()) {
@@ -91,32 +93,29 @@ namespace sklabelimportusers {
                                 $"[ MAIN ] --INF-- List of {usersInDatabase.Count} users downloaded from actual database",
                                 logger);
                             foreach (var userToImport in usersToImport) {
-                                var userId = userToImport.OID.ToString();
+                                var userId = userToImport.ID.ToString();
                                 if (!usersInDatabase.Select(user => user.Login).Contains(userId)) {
                                     var userToAdd = new user {
-                                        Login = userToImport.OID.ToString(),
-                                        FirstName = userToImport.Name,
-                                        Name = userToImport.FirstName,
-                                        Pin = userToImport.Password,
-                                        Barcode = userToImport.Rfid,
+                                        Login = userToImport.ID.ToString(),
+                                        FirstName = userToImport.surname,
+                                        Name = userToImport.firstname,
+                                        Pin = userToImport.psswd,
+                                        Barcode = userToImport.barcode,
+                                        Rfid = userToImport.rfid,
                                         UserRoleId = 2
                                     };
                                     databaseContext.Add(userToAdd);
-                                    LogInfo(
-                                        $"[ MAIN ] --INF-- Added new user: [{userToImport.Name} {userToImport.FirstName}], actual size is {usersInDatabase.Count}",
-                                        logger);
+                                    LogInfo($"[ MAIN ] --INF-- Added new user: [{userToImport.surname} {userToImport.firstname}], actual size is {usersInDatabase.Count}", logger);
                                 }
                             }
                             LogInfo($"[ MAIN ] --INF-- All new users added", logger);
                             foreach (var user in usersInDatabase) {
-                                user.Rfid = "";
-                                databaseContext.SaveChanges();
-                            }
-                            foreach (var actualUser in usersInDatabase) {
-                                foreach (var userToImport in usersToImport) {
-                                    if (userToImport.OID.ToString().Equals(actualUser.Login)) {
-                                        actualUser.Rfid = userToImport.Rfid;
-                                        actualUser.Pin = userToImport.Password;
+                                foreach (var importedUser in usersToImport) {
+                                    if (importedUser.ID.Equals(user.Login)) {
+                                        LogInfo($"[ MAIN ] --INF-- Updating user: [{user.FirstName} {user.Name}] with Rfid: {importedUser.rfid}, Barcode: {importedUser.barcode}, Pin: {importedUser.psswd}", logger);
+                                        user.Rfid = importedUser.rfid;
+                                        user.Pin = importedUser.psswd;
+                                        user.Barcode = importedUser.barcode;
                                         databaseContext.SaveChanges();
                                         break;
                                     }
@@ -136,7 +135,7 @@ namespace sklabelimportusers {
             }
         }
 
-        private static List<UserImport> DownloadUserFromImportDatabase(ILogger logger, List<UserImport> usersToImport) {
+        private static List<Fask_logins> DownloadUserFromImportDatabase(ILogger logger, List<Fask_logins> usersToImport) {
             using (var importDatabaseContext = new AppImportDbContext()) {
                 try {
                     usersToImport = importDatabaseContext.UserImport.ToList();
@@ -326,6 +325,8 @@ namespace sklabelimportusers {
                 _importDatabaseUserFirstNameColumn = configuration["importdatabaseuserfirstnamecolumn"];
                 _importDatabaseUserSurnameColumn = configuration["importdatabaseusersurnamecolumn"];
                 _importDatabaseUserRfidColumn = configuration["importdatabaseuserrfidcolumn"];
+                _importDatabaseUserBarcodeColumn = configuration["importdatabaseuserbarcodecolumn"];
+                _importDatabaseUserPinColumn = configuration["importdatabaseuserpincolumn"];
                 _importDatabaseUserTypeColumn = configuration["importdatabaseusertypecolumn"];
                 _importDatabaseUserEmailColumn = configuration["importdatabaseuseremailcolumn"];
                 _importDatabaseUserPhoneColumn = configuration["importdatabaseuserphonecolumn"];

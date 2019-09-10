@@ -23,6 +23,8 @@
         public string ImportDatabaseUserFirstNameColumn { get; set; }
         public string ImportDatabaseUserSurnameColumn { get; set; }
         public string ImportDatabaseUserRfidColumn { get; set; }
+        public string ImportDatabaseUserPinColumn { get; set; }
+        public string ImportDatabaseUserBarcodeColumn { get; set; }
         public string ImportDatabaseUserTypeColumn { get; set; }
         public string ImportDatabaseUserEmailColumn { get; set; }
         public string ImportDatabaseUserPhoneColumn { get; set; }
@@ -52,7 +54,9 @@
             ImportDatabaseUserIdColumn = "ID";
             ImportDatabaseUserFirstNameColumn = "firstname";
             ImportDatabaseUserSurnameColumn = "surname";
-            ImportDatabaseUserRfidColumn = "barcode";
+            ImportDatabaseUserPinColumn = "psswd";
+            ImportDatabaseUserBarcodeColumn = "barcode";
+            ImportDatabaseUserRfidColumn = "rfid";
             ImportDatabaseUserTypeColumn = "";
             ImportDatabaseUserEmailColumn = "";
             ImportDatabaseUserPhoneColumn = "";

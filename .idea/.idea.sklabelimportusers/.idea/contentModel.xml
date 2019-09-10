@@ -13,6 +13,7 @@
       <e p="Config.cs" t="Include" />
       <e p="create_latest.ps1" t="Include" />
       <e p="dockerfile" t="Include" />
+      <e p="Fask_logins.cs" t="Include" />
       <e p="obj" t="ExcludeRecursive">
         <e p="Debug" t="Include">
           <e p="netcoreapp2.2" t="Include">
@@ -114,7 +115,6 @@
       <e p="sklabelimportusers.sln" t="IncludeFlat" />
       <e p="Updateversion.ps1" t="Include" />
       <e p="user.cs" t="Include" />
-      <e p="UserImport.cs" t="Include" />
     </e>
   </component>
 </project>
