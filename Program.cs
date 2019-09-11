@@ -109,13 +109,28 @@ namespace sklabelimportusers {
                                 }
                             }
                             LogInfo($"[ MAIN ] --INF-- All new users added", logger);
+                            char[] charsToTrim = {' '};
                             foreach (var user in usersInDatabase) {
                                 foreach (var importedUser in usersToImport) {
                                     if (importedUser.ID.Equals(user.Login)) {
-                                        LogInfo($"[ MAIN ] --INF-- Updating user: [{user.FirstName} {user.Name}] with Rfid: {importedUser.rfid}, Barcode: {importedUser.barcode}, Pin: {importedUser.psswd}", logger);
-                                        user.Rfid = importedUser.rfid;
-                                        user.Pin = importedUser.psswd;
-                                        user.Barcode = importedUser.barcode;
+                                        LogInfo(
+                                            $"[ MAIN ] --INF-- Updating user: [{user.FirstName} {user.Name}] with Rfid: {importedUser.rfid}, Barcode: {importedUser.barcode}, Pin: {importedUser.psswd}",
+                                            logger);
+                                        if (importedUser.rfid != null) {
+                                            user.Rfid = importedUser.rfid.Trim(charsToTrim);
+                                        } else {
+                                            user.Rfid = importedUser.rfid;
+                                        }
+                                        if (importedUser.psswd != null) {
+                                            user.Pin = importedUser.psswd.Trim(charsToTrim);
+                                        } else {
+                                            user.Pin = importedUser.psswd;
+                                        }
+                                        if (user.Barcode != null) {
+                                            user.Barcode = importedUser.barcode.Trim(charsToTrim);
+                                        } else {
+                                            user.Barcode = importedUser.barcode;
+                                        }
                                         databaseContext.SaveChanges();
                                         break;
                                     }
