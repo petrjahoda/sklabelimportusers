@@ -119,14 +119,18 @@ namespace sklabelimportusers {
                                         if (importedUser.rfid != null) {
                                             user.Rfid = importedUser.rfid.Trim(charsToTrim);
                                         } else {
-                                            user.Rfid = importedUser.rfid;
+                                            if (importedUser.barcode != null) {
+                                                user.Rfid = importedUser.barcode.Trim(charsToTrim);
+                                            } else {
+                                                user.Rfid = importedUser.barcode;
+                                            }
                                         }
                                         if (importedUser.psswd != null) {
                                             user.Pin = importedUser.psswd.Trim(charsToTrim);
                                         } else {
                                             user.Pin = importedUser.psswd;
                                         }
-                                        if (user.Barcode != null) {
+                                        if (importedUser.barcode != null) {
                                             user.Barcode = importedUser.barcode.Trim(charsToTrim);
                                         } else {
                                             user.Barcode = importedUser.barcode;
