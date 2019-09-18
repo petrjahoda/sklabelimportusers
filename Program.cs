@@ -18,7 +18,7 @@ namespace sklabelimportusers {
     class Program {
         private const double InitialDownloadInMilliseconds = 1000;
         private const double DownloadCycleInMilliseconds = 86400000;
-        private const string BuildDate = "2019.3.3.10";
+        private const string BuildDate = "2019.3.3.18";
         private const string DataFolder = "Logs";
         private const string ConfigFolder = "Config";
         public static bool _osIsLinux;
@@ -97,19 +97,24 @@ namespace sklabelimportusers {
                                 if (!usersInDatabase.Select(user => user.Login).Contains(userId)) {
                                     var userToAdd = new user {
                                         Login = userToImport.ID.ToString(),
-                                        FirstName = userToImport.surname,
-                                        Name = userToImport.firstname,
+                                        FirstName = userToImport.firstname,
+                                        Name = userToImport.surname,
                                         Pin = userToImport.psswd,
                                         Barcode = userToImport.barcode,
-                                        Rfid = userToImport.rfid,
+                                        Rfid = Convert.ToInt32(userToImport.rfid, 16).ToString(),
                                         UserRoleId = 2
                                     };
                                     databaseContext.Add(userToAdd);
                                     LogInfo($"[ MAIN ] --INF-- Added new user: [{userToImport.surname} {userToImport.firstname}], actual size is {usersInDatabase.Count}", logger);
                                 }
                             }
+
                             LogInfo($"[ MAIN ] --INF-- All new users added", logger);
                             char[] charsToTrim = {' '};
+                            foreach (var user in usersInDatabase) {
+                                user.Rfid = "";
+                                databaseContext.SaveChanges();
+                            }
                             foreach (var user in usersInDatabase) {
                                 foreach (var importedUser in usersToImport) {
                                     if (importedUser.ID.Equals(user.Login)) {
@@ -117,29 +122,29 @@ namespace sklabelimportusers {
                                             $"[ MAIN ] --INF-- Updating user: [{user.FirstName} {user.Name}] with Rfid: {importedUser.rfid}, Barcode: {importedUser.barcode}, Pin: {importedUser.psswd}",
                                             logger);
                                         if (importedUser.rfid != null) {
-                                            user.Rfid = importedUser.rfid.Trim(charsToTrim);
+                                            user.Rfid = Convert.ToInt32(importedUser.rfid, 16).ToString().Trim(charsToTrim).PadLeft(10,'0');
                                         } else {
-                                            if (importedUser.barcode != null) {
-                                                user.Rfid = importedUser.barcode.Trim(charsToTrim);
-                                            } else {
-                                                user.Rfid = importedUser.barcode;
-                                            }
+                                            user.Rfid = Convert.ToInt32(importedUser.rfid, 16).ToString().PadLeft(10,'0');
                                         }
+
                                         if (importedUser.psswd != null) {
                                             user.Pin = importedUser.psswd.Trim(charsToTrim);
                                         } else {
                                             user.Pin = importedUser.psswd;
                                         }
+
                                         if (importedUser.barcode != null) {
                                             user.Barcode = importedUser.barcode.Trim(charsToTrim);
                                         } else {
                                             user.Barcode = importedUser.barcode;
                                         }
+
                                         databaseContext.SaveChanges();
                                         break;
                                     }
                                 }
                             }
+
                             LogInfo($"[ MAIN ] --INF-- All actual users were updated with actual Rfid data", logger);
                         } catch (Exception error) {
                             LogError(
@@ -147,8 +152,10 @@ namespace sklabelimportusers {
                                 logger);
                         }
                     }
+
                     LogInfo($"[ MAIN ] --INF-- No users to import", logger);
                 }
+
                 LogInfo($"[ MAIN ] --INF-- Import ended", logger);
                 _processIsRunning = false;
             }
@@ -163,6 +170,7 @@ namespace sklabelimportusers {
                     LogError($"[ MAIN ] --INF-- Cannot download list of users for import: {error.Message}", logger);
                 }
             }
+
             return usersToImport;
         }
 
@@ -391,6 +399,7 @@ namespace sklabelimportusers {
             } else {
                 Console.ForegroundColor = ConsoleColor.Cyan;
             }
+
             Console.WriteLine($"{DateTime.Now} {text}");
         }
 
@@ -401,6 +410,7 @@ namespace sklabelimportusers {
             } else {
                 Console.ForegroundColor = ConsoleColor.Yellow;
             }
+
             Console.WriteLine($"{DateTime.Now} {text}");
         }
 
@@ -447,6 +457,7 @@ namespace sklabelimportusers {
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux)) {
                 Console.Write(CyanColor);
             }
+
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("");
             Console.WriteLine(
