@@ -84,24 +84,24 @@ namespace sklabelimportusers {
                 _processIsRunning = true;
                 LogInfo("[ MAIN ] --INF-- Import started", logger);
                 var usersToImport = new List<Fask_logins>();
+                char[] charsToTrim = {' '};
+
                 usersToImport = DownloadUserFromImportDatabase(logger, usersToImport);
                 if (usersToImport.Count > 0) {
                     using (var databaseContext = new AppDbContext()) {
                         try {
                             var usersInDatabase = databaseContext.user.ToList();
-                            LogInfo(
-                                $"[ MAIN ] --INF-- List of {usersInDatabase.Count} users downloaded from actual database",
-                                logger);
+                            LogInfo($"[ MAIN ] --INF-- List of {usersInDatabase.Count} users downloaded from actual database", logger);
                             foreach (var userToImport in usersToImport) {
-                                var userId = userToImport.ID.ToString();
+                                var userId = userToImport.ID.Trim(charsToTrim);
                                 if (!usersInDatabase.Select(user => user.Login).Contains(userId)) {
                                     var userToAdd = new user {
-                                        Login = userToImport.ID.ToString(),
+                                        Login = userToImport.ID.Trim(charsToTrim),
                                         FirstName = userToImport.firstname,
                                         Name = userToImport.surname,
                                         Pin = userToImport.psswd,
                                         Barcode = userToImport.barcode,
-                                        Rfid = Convert.ToInt32(userToImport.rfid, 16).ToString(),
+                                        Rfid = userToImport.rfid,
                                         UserRoleId = 2
                                     };
                                     databaseContext.Add(userToAdd);
@@ -109,22 +109,30 @@ namespace sklabelimportusers {
                                 }
                             }
 
-                            LogInfo($"[ MAIN ] --INF-- All new users added", logger);
-                            char[] charsToTrim = {' '};
+                            LogInfo($"[ MAIN ] --INF-- All new users added, deleting rfid in zapsi database", logger);
                             foreach (var user in usersInDatabase) {
                                 user.Rfid = "";
                                 databaseContext.SaveChanges();
                             }
+
+                            LogInfo($"[ MAIN ] --INF-- Rfid data in zapsi database deleted, updating users...", logger);
+
                             foreach (var user in usersInDatabase) {
+                                LogInfo($"[ MAIN ] --INF-- [{user.Login}] {user.FirstName} {user.Name}, updating user...", logger);
+
                                 foreach (var importedUser in usersToImport) {
-                                    if (importedUser.ID.Equals(user.Login)) {
+                                    if (importedUser.ID.Trim(charsToTrim).Equals(user.Login)) {
                                         LogInfo(
-                                            $"[ MAIN ] --INF-- Updating user: [{user.FirstName} {user.Name}] with Rfid: {importedUser.rfid}, Barcode: {importedUser.barcode}, Pin: {importedUser.psswd}",
+                                            $"[ MAIN ] --INF-- [{user.Login}] {user.FirstName} {user.Name} Rfid: {importedUser.rfid}, Barcode: {importedUser.barcode}, Pin: {importedUser.psswd}",
                                             logger);
                                         if (importedUser.rfid != null) {
-                                            user.Rfid = Convert.ToInt32(importedUser.rfid, 16).ToString().Trim(charsToTrim).PadLeft(10,'0');
+                                            try {
+                                                user.Rfid = Convert.ToInt32(importedUser.rfid, 16).ToString().Trim(charsToTrim).PadLeft(10, '0');
+                                            } catch (Exception error) {
+                                                LogError($"[ MAIN ] --INF--[{user.Login}] {user.FirstName} {user.Name} stupid rfid in SK Label database: {importedUser.rfid}", logger);
+                                            }
                                         } else {
-                                            user.Rfid = Convert.ToInt32(importedUser.rfid, 16).ToString().PadLeft(10,'0');
+                                            user.Rfid = importedUser.barcode.Trim(charsToTrim);
                                         }
 
                                         if (importedUser.psswd != null) {
@@ -147,13 +155,9 @@ namespace sklabelimportusers {
 
                             LogInfo($"[ MAIN ] --INF-- All actual users were updated with actual Rfid data", logger);
                         } catch (Exception error) {
-                            LogError(
-                                $"[ MAIN ] --INF-- Cannot download list of users from actual database: {error.Message}",
-                                logger);
+                            LogError($"[ MAIN ] --INF-- Cannot download list of users from actual database: {error.Message}", logger);
                         }
                     }
-
-                    LogInfo($"[ MAIN ] --INF-- No users to import", logger);
                 }
 
                 LogInfo($"[ MAIN ] --INF-- Import ended", logger);
