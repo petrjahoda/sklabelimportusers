@@ -128,7 +128,7 @@ namespace sklabelimportusers {
                                             logger);
                                         if (importedUser.rfid != null) {
                                             try {
-                                                user.Rfid = Convert.ToInt32(importedUser.rfid.Trim(charsToTrim), 16).ToString();
+                                                user.Rfid = Convert.ToInt32(importedUser.rfid.Trim(charsToTrim), 16).ToString().PadLeft(10,'0');
                                                 // user.Rfid = Convert.ToInt32(importedUser.rfid, 16).ToString().Trim(charsToTrim).PadLeft(10, '0');
                                             } catch (Exception error) {
                                                 LogError($"[ MAIN ] --INF--[{user.Login}] {user.FirstName} {user.Name} stupid rfid in SK Label database: {importedUser.rfid}", logger);
