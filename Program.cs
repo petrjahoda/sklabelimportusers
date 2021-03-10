@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Mail;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Cryptography;
 using System.Text;
@@ -18,7 +19,7 @@ namespace sklabelimportusers {
     class Program {
         private const double InitialDownloadInMilliseconds = 1000;
         private const double DownloadCycleInMilliseconds = 86400000;
-        private const string BuildDate = "2019.3.3.18";
+        private const string BuildDate = "2021.1.3.10";
         private const string DataFolder = "Logs";
         private const string ConfigFolder = "Config";
         public static bool _osIsLinux;
@@ -127,7 +128,8 @@ namespace sklabelimportusers {
                                             logger);
                                         if (importedUser.rfid != null) {
                                             try {
-                                                user.Rfid = Convert.ToInt32(importedUser.rfid, 16).ToString().Trim(charsToTrim).PadLeft(10, '0');
+                                                user.Rfid = Convert.ToInt32(importedUser.rfid.Trim(charsToTrim), 16).ToString();
+                                                // user.Rfid = Convert.ToInt32(importedUser.rfid, 16).ToString().Trim(charsToTrim).PadLeft(10, '0');
                                             } catch (Exception error) {
                                                 LogError($"[ MAIN ] --INF--[{user.Login}] {user.FirstName} {user.Name} stupid rfid in SK Label database: {importedUser.rfid}", logger);
                                             }
